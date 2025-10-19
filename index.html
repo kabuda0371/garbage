@@ -1,53 +1,173 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Flat Garbage Schedule</title>
+<!-- Prevent caching so updates show immediately -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.5;margin:0;padding:24px;max-width:780px}
-  h1{margin:0 0 6px}
-  .sub{color:#555;margin:0 0 16px}
-  table{border-collapse:collapse;width:100%;margin:12px 0;border:1px solid #ddd}
-  th,td{border:1px solid #e5e5e5;padding:8px;text-align:left}
-  th{background:#f7f7f7}
-  .tip{margin-top:12px;color:#444}
-  .map{margin:10px 0;padding:8px;border:1px dashed #ccc;border-radius:8px;background:#fafafa}
+  :root{
+    --bg: #f7f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --primary: #2563eb;
+    --accent: #22c55e;
+    --border: #e5e7eb;
+    --table-header: #f3f4f6;
+    --today: #fff7ed; /* soft amber */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root{
+      --bg: #0b1020;
+      --card: #12172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #60a5fa;
+      --accent: #34d399;
+      --border: #1f2937;
+      --table-header: #111827;
+      --today: #1b263b;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.6;
+  }
+  .wrap{max-width: 900px; margin: 32px auto; padding: 0 20px;}
+  .hero{
+    position: relative;
+    border-radius: 18px;
+    padding: 22px 20px 20px 20px;
+    background: linear-gradient(135deg, rgba(37,99,235,.10), rgba(34,197,94,.10));
+    border:1px solid var(--border);
+    box-shadow: 0 12px 24px rgba(0,0,0,.06);
+  }
+  .hero h1{ margin:0 0 6px; font-size: clamp(22px, 4vw, 28px); display:flex; align-items:center; gap:10px; }
+  .badge{display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; background:var(--card); border:1px solid var(--border); color:var(--muted)}
+  .sub{margin:6px 0 0; color:var(--muted)}
+
+  .panel{ margin-top:16px; display:grid; gap:14px; grid-template-columns: 1fr; }
+  @media (min-width:720px){ .panel{ grid-template-columns: 1fr 1fr; } }
+  .legend, .notice{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .legend strong{color:var(--text)}
+  .muted{color:var(--muted)}
+
+  .table-wrap{
+    margin-top:18px;
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0,0,0,.05);
+  }
+  table{ width:100%; border-collapse: collapse; }
+  thead th{
+    background: var(--table-header);
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-align:left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+  }
+  tbody td{ padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  tbody tr:hover{ background: rgba(37,99,235,.06); }
+  tbody tr.is-today{ background: var(--today); }
+  tbody tr.is-next{ outline: 2px dashed rgba(37,99,235,.45); outline-offset: -2px; }
+
+  .toolbar{ display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap: wrap; }
+  .pill{ padding:6px 10px; border:1px solid var(--border); background:var(--card); border-radius:999px; font-size: 13px; }
+  .right{ margin-left:auto; color:var(--muted); font-size:13px }
+
+  footer{ margin: 18px 0 32px; color: var(--muted); font-size:13px; text-align:center }
 </style>
 </head>
 <body>
-<h1>Schedule – Garbage</h1>
-<p class="sub">Two people every week: <b>Monday</b> and <b>Thursday</b>. Six people rotate every 3 weeks.</p>
+  <div class="wrap">
+    <section class="hero">
+      <h1>🗑️ Flat Garbage Schedule <span class="badge">Mon & Thu • 6-person rotation</span></h1>
+      <p class="sub">Two people every week: <b>Monday</b> and <b>Thursday</b>. Six people rotate every ~3 weeks.</p>
+      <div class="panel">
+        <div class="legend">
+          <strong>People / letters</strong><br>
+          <span class="muted">A – Zizeng &nbsp;|&nbsp; B – Cheyang &nbsp;|&nbsp; C – Peter &nbsp;|&nbsp; D – Alice &nbsp;|&nbsp; E – Yixiao &nbsp;|&nbsp; F – Enzo</span>
+        </div>
+        <div class="notice">
+          <strong>Note</strong><br>
+          <span class="muted">If you can’t make your day, please notify in the WhatsApp group 🙂</span>
+        </div>
+      </div>
 
-<div class="map">
-<strong>People / letters</strong><br>
-A – Zizeng &nbsp;|&nbsp; B – Cheyang &nbsp;|&nbsp; C – Peter &nbsp;|&nbsp; D – Alice &nbsp;|&nbsp; E – Yixiao &nbsp;|&nbsp; F – Enzo
-</div>
+      <div class="toolbar">
+        <span class="pill" id="today-pill">Today: <span id="today-label">—</span></span>
+        <span class="pill" id="next-pill">Next duty: <span id="next-label">—</span></span>
+        <span class="right" id="updated">Last updated: <span id="updated-at"></span></span>
+      </div>
+    </section>
 
-<table>
-  <thead>
-    <tr><th>Date</th><th>Weekday</th><th>Person</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Oct 20</td><td>Monday</td><td>Ziteng (A)</td></tr>
-    <tr><td>Oct 23</td><td>Thursday</td><td>Yixiao (B)</td></tr>
-    <tr><td>Oct 27</td><td>Monday</td><td>Peter (C)</td></tr>
-    <tr><td>Oct 30</td><td>Thursday</td><td>Alice (D)</td></tr>
-    <tr><td>Nov 3</td><td>Monday</td><td>Yixiao (E)</td></tr>
-    <tr><td>Nov 6</td><td>Thursday</td><td>Enzo (F)</td></tr>
-    <tr><td>Nov 10</td><td>Monday</td><td>Zizeng (A)</td></tr>
-    <tr><td>Nov 13</td><td>Thursday</td><td>Cheyang (B)</td></tr>
-    <tr><td>Nov 17</td><td>Monday</td><td>Peter (C)</td></tr>
-    <tr><td>Nov 20</td><td>Thursday</td><td>Alice (D)</td></tr>
-    <tr><td>Nov 24</td><td>Monday</td><td>Yixiao (E)</td></tr>
-    <tr><td>Nov 27</td><td>Thursday</td><td>Enzo (F)</td></tr>
-    <tr><td>Dec 1</td><td>Monday</td><td>Zizeng (A)</td></tr>
-    <tr><td>Dec 4</td><td>Thursday</td><td>Cheyang (B)</td></tr>
-    <tr><td>Dec 8</td><td>Monday</td><td>Peter (C)</td></tr>
-    <tr><td>Dec 11</td><td>Thursday</td><td>Alice (D)</td></tr>
-  </tbody>
-</table>
+    <div class="table-wrap">
+      <table id="schedule">
+        <thead>
+          <tr><th>Date</th><th>Weekday</th><th>Person</th></tr>
+        </thead>
+        <tbody>
+          <!-- Add ISO dates via data-date for logic/highlighting -->
+          <tr data-date="2025-10-20"><td>Oct 20</td><td>Monday</td><td>Ziteng (A)</td></tr>
+          <tr data-date="2025-10-23"><td>Oct 23</td><td>Thursday</td><td>Yixiao (B)</td></tr>
+          <tr data-date="2025-10-27"><td>Oct 27</td><td>Monday</td><td>Peter (C)</td></tr>
+          <tr data-date="2025-10-30"><td>Oct 30</td><td>Thursday</td><td>Alice (D)</td></tr>
+          <tr data-date="2025-11-03"><td>Nov 3</td><td>Monday</td><td>Yixiao (E)</td></tr>
+          <tr data-date="2025-11-06"><td>Nov 6</td><td>Thursday</td><td>Enzo (F)</td></tr>
+          <tr data-date="2025-11-10"><td>Nov 10</td><td>Monday</td><td>Zizeng (A)</td></tr>
+          <tr data-date="2025-11-13"><td>Nov 13</td><td>Thursday</td><td>Cheyang (B)</td></tr>
+          <tr data-date="2025-11-17"><td>Nov 17</td><td>Monday</td><td>Peter (C)</td></tr>
+          <tr data-date="2025-11-20"><td>Nov 20</td><td>Thursday</td><td>Alice (D)</td></tr>
+          <tr data-date="2025-11-24"><td>Nov 24</td><td>Monday</td><td>Yixiao (E)</td></tr>
+          <tr data-date="2025-11-27"><td>Nov 27</td><td>Thursday</td><td>Enzo (F)</td></tr>
+          <tr data-date="2025-12-01"><td>Dec 1</td><td>Monday</td><td>Zizeng (A)</td></tr>
+          <tr data-date="2025-12-04"><td>Dec 4</td><td>Thursday</td><td>Cheyang (B)</td></tr>
+          <tr data-date="2025-12-08"><td>Dec 8</td><td>Monday</td><td>Peter (C)</td></tr>
+          <tr data-date="2025-12-11"><td>Dec 11</td><td>Thursday</td><td>Alice (D)</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-<p class="tip">If you can’t make your day, please notify in the WhatsApp group 🙂</p>
+    <footer>
+      This page is static (no server). Share as QR or link.
+    </footer>
+  </div>
+
+<script>
+  // Update "Last updated" timestamp
+  document.getElementById('updated-at').textContent = new Date().toISOString().slice(0,10);
+
+  // Highlight today and compute next duty based on data-date (ISO yyyy-mm-dd)
+  const today = new Date();
+  const rows = Array.from(document.querySelectorAll('#schedule tbody tr'));
+  let next = null, todayMatch = null;
+  for (const tr of rows){
+    const iso = tr.getAttribute('data-date');
+    if(!iso) continue;
+    const d = new Date(iso + 'T00:00:00');
+    // Normalize times for comparison
+    const td = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (d.getTime() === td.getTime()) { tr.classList.add('is-today'); todayMatch = tr; }
+    if (d >= td && !next) next = tr; // first upcoming (including today)
+  }
+  const fmt = tr => tr ? tr.children[0].textContent + ' • ' + tr.children[2].textContent : '—';
+  document.getElementById('today-label').textContent = fmt(todayMatch);
+  if (next){ next.classList.add('is-next'); }
+  document.getElementById('next-label').textContent = fmt(next);
+</script>
 </body>
 </html>
