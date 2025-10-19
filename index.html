@@ -90,54 +90,53 @@
   .right{ margin-left:auto; color:var(--muted); font-size:13px }
 
   footer{ margin: 18px 0 32px; color: var(--muted); font-size:13px; text-align:center }
+  tbody tr.is-past td{ color: var(--muted); }
+  /* Highlight language toggle button */
+  #lang-btn-floating{cursor:pointer;font-weight:600;background:var(--primary);color:#fff;border-color:var(--primary);transition:0.2s;}
+  #lang-btn-floating:hover{opacity:0.9;transform:translateY(-1px);}
+  /* Language toggle button — clearer & elevated */
+  #lang-btn-floating{cursor:pointer;font-weight:700;background:var(--primary);color:#fff;border-color:var(--primary);
+    padding:8px 14px;border-radius:999px;box-shadow:0 4px 10px rgba(37,99,235,.25);display:inline-flex;align-items:center;gap:8px}
+  #lang-btn-floating:hover{opacity:.95;transform:translateY(-1px)}
+  #lang-btn-floating:active{transform:translateY(0)}
+  /* Floating position for language toggle */
+  #lang-btn-floating{position:fixed;top:16px;right:16px;z-index:1000}
+  @media (max-width:480px){#lang-btn-floating{top:12px;right:12px;padding:7px 12px}}
 </style>
 </head>
 <body>
+  <!-- Floating language toggle (fixed at top-right) -->
+  <button id="lang-btn-floating" type="button" aria-label="Language toggle">🇬🇧 EN</button>
   <div class="wrap">
     <section class="hero">
-      <h1>🗑️ Flat Garbage Schedule <span class="badge">Mon & Thu • 6-person rotation</span></h1>
-      <p class="sub">Two people every week: <b>Monday</b> and <b>Thursday</b>. Six people rotate every ~3 weeks.</p>
+      <h1><span id="title-emoji">🗑️</span> <span id="title-text">Flat Garbage Schedule</span> <span class="badge" id="badge-text">Mon & Thu • 6-person rotation</span></h1>
+      <p class="sub" id="sub-text">Two people every week: <b>Monday</b> and <b>Thursday</b>. Six people rotate every ~3 weeks.</p>
       <div class="panel">
         <div class="legend">
-          <strong>People / letters</strong><br>
+          <strong id="legend-title">People / letters</strong><br>
           <span class="muted">A – Zizeng &nbsp;|&nbsp; B – Cheyang &nbsp;|&nbsp; C – Peter &nbsp;|&nbsp; D – Alice &nbsp;|&nbsp; E – Yixiao &nbsp;|&nbsp; F – Enzo</span>
         </div>
         <div class="notice">
-          <strong>Note</strong><br>
-          <span class="muted">If you can’t make your day, please notify in the WhatsApp group 🙂</span>
+          <strong id="note-title">Note</strong><br>
+          <span class="muted" id="note-text">If you can’t make your day, please notify in the WhatsApp group 🙂</span>
         </div>
       </div>
 
       <div class="toolbar">
-        <span class="pill" id="today-pill">Today: <span id="today-label">—</span></span>
-        <span class="pill" id="next-pill">Next duty: <span id="next-label">—</span></span>
-        <span class="right" id="updated">Last updated: <span id="updated-at"></span></span>
+        <span class="pill" id="today-pill"><span id="today-pill-label">Today:</span> <span id="today-label">—</span></span>
+        <span class="pill" id="next-pill"><span id="next-pill-label">Next duty:</span> <span id="next-label">—</span></span>
+        
+        <span class="right" id="updated"><span id="updated-label">Last updated:</span> <span id="updated-at"></span></span>
       </div>
     </section>
 
     <div class="table-wrap">
       <table id="schedule">
         <thead>
-          <tr><th>Date</th><th>Weekday</th><th>Person</th></tr>
+          <tr><th id="th-date">Date</th><th id="th-weekday">Weekday</th><th id="th-person">Person</th></tr>
         </thead>
-        <tbody>
-          <!-- Add ISO dates via data-date for logic/highlighting -->
-          <tr data-date="2025-10-20"><td>Oct 20</td><td>Monday</td><td>Ziteng (A)</td></tr>
-          <tr data-date="2025-10-23"><td>Oct 23</td><td>Thursday</td><td>Chenyang (B)</td></tr>
-          <tr data-date="2025-10-27"><td>Oct 27</td><td>Monday</td><td>Peter (C)</td></tr>
-          <tr data-date="2025-10-30"><td>Oct 30</td><td>Thursday</td><td>Alice (D)</td></tr>
-          <tr data-date="2025-11-03"><td>Nov 3</td><td>Monday</td><td>Yixiao (E)</td></tr>
-          <tr data-date="2025-11-06"><td>Nov 6</td><td>Thursday</td><td>Enzo (F)</td></tr>
-          <tr data-date="2025-11-10"><td>Nov 10</td><td>Monday</td><td>Zizeng (A)</td></tr>
-          <tr data-date="2025-11-13"><td>Nov 13</td><td>Thursday</td><td>Chenyang (B)</td></tr>
-          <tr data-date="2025-11-17"><td>Nov 17</td><td>Monday</td><td>Peter (C)</td></tr>
-          <tr data-date="2025-11-20"><td>Nov 20</td><td>Thursday</td><td>Alice (D)</td></tr>
-          <tr data-date="2025-11-24"><td>Nov 24</td><td>Monday</td><td>Yixiao (E)</td></tr>
-          <tr data-date="2025-11-27"><td>Nov 27</td><td>Thursday</td><td>Enzo (F)</td></tr>
-          <tr data-date="2025-12-01"><td>Dec 1</td><td>Monday</td><td>Zizeng (A)</td></tr>
-          <tr data-date="2025-12-04"><td>Dec 4</td><td>Thursday</td><td>Chenyang (B)</td></tr>
-          <tr data-date="2025-12-08"><td>Dec 8</td><td>Monday</td><td>Peter (C)</td></tr>
-          <tr data-date="2025-12-11"><td>Dec 11</td><td>Thursday</td><td>Alice (D)</td></tr>
+        <tbody id="schedule-body">
+          <!-- Rows will be generated by JavaScript -->
         </tbody>
       </table>
     </div>
@@ -148,26 +147,161 @@
   </div>
 
 <script>
-  // Update "Last updated" timestamp
-  document.getElementById('updated-at').textContent = new Date().toISOString().slice(0,10);
+  // ===== I18N + Rendering + Highlighting =====
+  const i18n = {
+    en: {
+      title: 'Flat Garbage Schedule',
+      badge: 'Mon & Thu • 6-person rotation',
+      sub: 'Two people every week: <b>Monday</b> and <b>Thursday</b>. Six people rotate every ~3 weeks.',
+      legendTitle: 'People / letters',
+      noteTitle: 'Note',
+      note: 'If you can’t make your day, please notify in the WhatsApp group 🙂',
+      columns: { date: 'Date', weekday: 'Weekday', person: 'Person' },
+      today: 'Today',
+      next: 'Next duty',
+      updated: 'Last updated',
+      inDays: n => `in ${n} day${n>1?'s':''}`,
+      todayWord: 'today',
+      locale: 'en-GB'
+    },
+    de: {
+      title: 'Müllplan der WG',
+      badge: 'Mo & Do • Rotation mit 6 Personen',
+      sub: 'Jede Woche sind <b>Montag</b> und <b>Donnerstag</b> dran. Sechs Personen rotieren ca. alle 3 Wochen.',
+      legendTitle: 'Personen / Buchstaben',
+      noteTitle: 'Hinweis',
+      note: 'Wenn du an deinem Tag nicht kannst, bitte in der WhatsApp‑Gruppe Bescheid geben 🙂',
+      columns: { date: 'Datum', weekday: 'Wochentag', person: 'Person' },
+      today: 'Heute',
+      next: 'Nächster Dienst',
+      updated: 'Zuletzt aktualisiert',
+      inDays: n => `in ${n} Tag${n>1?'en':''}`,
+      todayWord: 'heute',
+      locale: 'de-DE'
+    }
+  };
 
-  // Highlight today and compute next duty based on data-date (ISO yyyy-mm-dd)
-  const today = new Date();
-  const rows = Array.from(document.querySelectorAll('#schedule tbody tr'));
-  let next = null, todayMatch = null;
-  for (const tr of rows){
-    const iso = tr.getAttribute('data-date');
-    if(!iso) continue;
+  // ---- Compact schedule data (edit here) ----
+  const scheduleData = [
+    { date: '2025-10-20', person: 'Ziteng (A)' },
+    { date: '2025-10-23', person: 'Chenyang (B)' },
+    { date: '2025-10-27', person: 'Peter (C)' },
+    { date: '2025-10-30', person: 'Alice (D)' },
+    { date: '2025-11-03', person: 'Yixiao (E)' },
+    { date: '2025-11-06', person: 'Enzo (F)' },
+    { date: '2025-11-10', person: 'Zizeng (A)' },
+    { date: '2025-11-13', person: 'Chenyang (B)' },
+    { date: '2025-11-17', person: 'Peter (C)' },
+    { date: '2025-11-20', person: 'Alice (D)' },
+    { date: '2025-11-24', person: 'Yixiao (E)' },
+    { date: '2025-11-27', person: 'Enzo (F)' },
+    { date: '2025-12-01', person: 'Zizeng (A)' },
+    { date: '2025-12-04', person: 'Chenyang (B)' },
+    { date: '2025-12-08', person: 'Peter (C)' },
+    { date: '2025-12-11', person: 'Alice (D)' }
+  ];
+
+  let lang = localStorage.getItem('lang-pref') || 'en';
+
+  function fmtDate(iso, locale){
     const d = new Date(iso + 'T00:00:00');
-    // Normalize times for comparison
-    const td = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    if (d.getTime() === td.getTime()) { tr.classList.add('is-today'); todayMatch = tr; }
-    if (d >= td && !next) next = tr; // first upcoming (including today)
+    return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(d);
   }
-  const fmt = tr => tr ? tr.children[0].textContent + ' • ' + tr.children[2].textContent : '—';
-  document.getElementById('today-label').textContent = fmt(todayMatch);
-  if (next){ next.classList.add('is-next'); }
-  document.getElementById('next-label').textContent = fmt(next);
+  function fmtWeekday(iso, locale){
+    const d = new Date(iso + 'T00:00:00');
+    return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(d);
+  }
+
+  function renderTable(){
+    const tbody = document.getElementById('schedule-body');
+    tbody.innerHTML = '';
+    scheduleData.forEach(({date, person}) => {
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-date', date);
+      tr.setAttribute('data-person', person);
+      tr.innerHTML = `<td>${fmtDate(date, i18n[lang].locale)}</td>`+
+                     `<td>${fmtWeekday(date, i18n[lang].locale)}</td>`+
+                     `<td>${person}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function applyI18n(){
+    const t = i18n[lang];
+    document.getElementById('title-text').textContent = t.title;
+    document.getElementById('badge-text').textContent = t.badge;
+    document.getElementById('sub-text').innerHTML = t.sub;
+    document.getElementById('legend-title').textContent = t.legendTitle;
+    document.getElementById('note-title').textContent = t.noteTitle;
+    document.getElementById('note-text').textContent = t.note;
+
+    document.getElementById('th-date').textContent = t.columns.date;
+    document.getElementById('th-weekday').textContent = t.columns.weekday;
+    document.getElementById('th-person').textContent = t.columns.person;
+
+    document.getElementById('today-pill-label').textContent = t.today + ':';
+    document.getElementById('next-pill-label').textContent = t.next + ':';
+    document.getElementById('updated-label').textContent = t.updated + ':';
+
+    const flag = lang==='en' ? '🇬🇧 EN' : '🇩🇪 DE';
+    const btn = document.getElementById('lang-btn-floating');
+    btn.innerHTML = flag;
+    btn.setAttribute('aria-label', lang==='en' ? 'Switch language' : 'Sprache wechseln');
+  }
+
+  function highlightAndSummaries(){
+    // Update last updated (keep ISO)
+    document.getElementById('updated-at').textContent = new Date().toISOString().slice(0,10);
+
+    const today = new Date();
+    const td = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const rows = Array.from(document.querySelectorAll('#schedule tbody tr'));
+    let next = null, todayMatch = null;
+
+    rows.forEach(tr => {
+      const iso = tr.getAttribute('data-date');
+      if(!iso) return;
+      const d = new Date(iso + 'T00:00:00');
+      tr.classList.remove('is-today','is-next','is-past');
+      if (d.getTime() === td.getTime()) { tr.classList.add('is-today'); todayMatch = tr; }
+      if (d < td) tr.classList.add('is-past');
+      if (d >= td && !next) next = tr;
+    });
+
+    const fmtLine = tr => {
+      if(!tr) return '—';
+      const iso = tr.getAttribute('data-date');
+      const person = tr.getAttribute('data-person');
+      return `${fmtDate(iso, i18n[lang].locale)} • ${person}`;
+    };
+
+    document.getElementById('today-label').textContent = fmtLine(todayMatch);
+    if (next){ next.classList.add('is-next'); }
+    document.getElementById('next-label').textContent = fmtLine(next);
+
+    if (next){
+      const nd = new Date(next.getAttribute('data-date') + 'T00:00:00');
+      const diffDays = Math.round((nd - td) / 86400000);
+      const base = document.getElementById('next-label').textContent;
+      const suffix = diffDays > 0 ? i18n[lang].inDays(diffDays) : i18n[lang].todayWord;
+      document.getElementById('next-label').textContent = `${base} — ${suffix}`;
+    }
+  }
+
+  function rerenderAll(){
+    applyI18n();
+    renderTable();
+    highlightAndSummaries();
+  }
+
+  document.getElementById('lang-btn-floating').addEventListener('click', () => {
+    lang = (lang === 'en') ? 'de' : 'en';
+    localStorage.setItem('lang-pref', lang);
+    rerenderAll();
+  });
+
+  // Initial render
+  rerenderAll();
 </script>
 </body>
 </html>
